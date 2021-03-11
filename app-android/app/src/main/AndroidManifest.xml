@@ -5,8 +5,6 @@
     android:versionCode="5"
     android:versionName="1.4" >
 
-    <uses-sdk />
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
@@ -19,7 +17,6 @@
         android:icon="@drawable/ic_launcher"
         android:theme="@style/AppTheme"
         android:label="@string/app_name"
-        android:largeHeap="true"
         tools:ignore="HardcodedDebugMode">
         <activity
             android:name="at.bitfire.gfxtablet.CanvasActivity"
