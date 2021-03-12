@@ -16,10 +16,10 @@
 
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="dark_canvas_preference"
-            android:title="@string/preferences_dark_canvas"
-            android:summaryOn="@string/preferences_dark_canvas_on"
-            android:summaryOff="@string/preferences_dark_canvas_off" />
+            android:key="grid_canvas_preference"
+            android:title="@string/preferences_canvas_grid"
+            android:summaryOn="@string/preferences_canvas_grid_on"
+            android:summaryOff="@string/preferences_canvas_grid_off" />
 
     </PreferenceCategory>
 </PreferenceScreen>
