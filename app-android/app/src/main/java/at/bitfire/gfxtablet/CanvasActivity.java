@@ -166,10 +166,10 @@ public class CanvasActivity extends AppCompatActivity implements View.OnSystemUi
 
         // show/hide action bar according to full-screen mode
         if (fullScreen) {
-            Objects.requireNonNull(CanvasActivity.this.getSupportActionBar()).hide();
+            Objects.requireNonNull(getSupportActionBar()).hide();
             Toast.makeText(CanvasActivity.this, "Press Back button to leave full-screen mode.", Toast.LENGTH_LONG).show();
         } else
-            Objects.requireNonNull(CanvasActivity.this.getSupportActionBar()).show();
+            Objects.requireNonNull(getSupportActionBar()).show();
     }
 
 
