@@ -13,6 +13,10 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 
 import androidx.fragment.app.FragmentActivity;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 
 import android.util.Log;
 import android.view.Menu;
@@ -31,14 +35,13 @@ import java.io.InputStreamReader;
 import java.util.Objects;
 
 public class CanvasActivity extends FragmentActivity implements View.OnSystemUiVisibilityChangeListener {
-    private static final int RESULT_LOAD_IMAGE = 1;
-
     final Uri homepageUri = Uri.parse(("https://gfxtablet.bitfire.at"));
 
     NetworkClient netClient;
 
     SharedPreferences preferences;
     boolean fullScreen = false;
+    ActivityResultLauncher<Intent> loadImageLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new LoadImageResult());
 
 
     @Override
@@ -199,7 +202,7 @@ public class CanvasActivity extends FragmentActivity implements View.OnSystemUiV
         } else {
             i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         }
-        startActivityForResult(i, RESULT_LOAD_IMAGE);
+        loadImageLauncher.launch(i);
     }
 
     public void clearTemplateImage(MenuItem item) {
@@ -207,26 +210,30 @@ public class CanvasActivity extends FragmentActivity implements View.OnSystemUiV
         showTemplateImage();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && data != null) {
-            Uri selectedImage = data.getData();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                int flagsToPersist = data.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION;
-                getContentResolver().takePersistableUriPermission(selectedImage, flagsToPersist);
-                preferences.edit().putString(SettingsActivity.KEY_TEMPLATE_IMAGE, selectedImage.toString()).apply();
-            } else {
-                String[] filePathColumn = {MediaStore.Images.Media.DATA};
+    private class LoadImageResult
+    implements ActivityResultCallback<ActivityResult>
+    {
+        @Override
+        public void onActivityResult(ActivityResult result)
+        {
+            Intent data = result.getData();
+            if (result.getResultCode() == RESULT_OK && data != null) {
+                Uri selectedImage = data.getData();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    int flagsToPersist = data.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION;
+                    getContentResolver().takePersistableUriPermission(selectedImage, flagsToPersist);
+                    preferences.edit().putString(SettingsActivity.KEY_TEMPLATE_IMAGE, selectedImage.toString()).apply();
+                } else {
+                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
-                try (Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null)) {
-                    cursor.moveToFirst();
+                    try (Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null)) {
+                        cursor.moveToFirst();
 
-                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                    String picturePath = cursor.getString(columnIndex);
+                        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                        String picturePath = cursor.getString(columnIndex);
 
-                    preferences.edit().putString(SettingsActivity.KEY_TEMPLATE_IMAGE, picturePath).apply();
-                    showTemplateImage();
+                        preferences.edit().putString(SettingsActivity.KEY_TEMPLATE_IMAGE, picturePath).apply();
+                    }
                 }
             }
         }
