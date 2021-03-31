@@ -1,14 +1,14 @@
 package at.bitfire.gfxtablet
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.fragment.app.FragmentActivity
 
-class SettingsActivity : AppCompatActivity()
+class SettingsActivity : FragmentActivity()
 {
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        actionBar?.setDisplayHomeAsUpEnabled(true)
         setContentView(R.layout.activity_settings)
     }
 

@@ -11,8 +11,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.PopupMenu;
+
+import androidx.fragment.app.FragmentActivity;
 
 import android.util.Log;
 import android.view.Menu;
@@ -30,7 +30,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Objects;
 
-public class CanvasActivity extends AppCompatActivity implements View.OnSystemUiVisibilityChangeListener {
+public class CanvasActivity extends FragmentActivity implements View.OnSystemUiVisibilityChangeListener {
     private static final int RESULT_LOAD_IMAGE = 1;
 
     final Uri homepageUri = Uri.parse(("https://gfxtablet.bitfire.at"));
@@ -166,10 +166,10 @@ public class CanvasActivity extends AppCompatActivity implements View.OnSystemUi
 
         // show/hide action bar according to full-screen mode
         if (fullScreen) {
-            Objects.requireNonNull(getSupportActionBar()).hide();
+            Objects.requireNonNull(getActionBar()).hide();
             Toast.makeText(CanvasActivity.this, "Press Back button to leave full-screen mode.", Toast.LENGTH_LONG).show();
         } else
-            Objects.requireNonNull(getSupportActionBar()).show();
+            Objects.requireNonNull(getActionBar()).show();
     }
 
 
