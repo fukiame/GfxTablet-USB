@@ -153,7 +153,7 @@ struct event_packet get_event() {
 	char* line;
 	size_t size = 0;
 	if(getline(&line, &size, daemonOut) != -1) {
-		printf("%s", line);
+		//printf("%s", line);
 		struct event_packet data;
 		int a, b, c, d, e, f;
 
@@ -190,9 +190,9 @@ int main(void)
 	//while (recv(udp_socket, &ev_pkt, sizeof(ev_pkt), 0) >= 9) {		// every packet has at least 9 bytes
 	while (1) {
 		ev_pkt = get_event();
-		//printf("."); fflush(0);
+		printf("."); fflush(0);
 
-		//printf("x: %hu, y: %hu, pressure: %hu\n", ev_pkt.x, ev_pkt.y, ev_pkt.pressure);
+		printf("x: %hu, y: %hu, pressure: %hu\n", ev_pkt.x, ev_pkt.y, ev_pkt.pressure);
 
 		send_event(device, EV_ABS, ABS_X, ev_pkt.x);
 		send_event(device, EV_ABS, ABS_Y, ev_pkt.y);
