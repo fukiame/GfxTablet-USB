@@ -11,8 +11,13 @@
 *.class
 
 # generated files
+networktablet
 bin/
 gen/
+driver-uinput/libs/
+driver-uinput/obj/
+app-android/app/build/
+app-android/app/release/
 
 # Local configuration file (sdk path, etc)
 local.properties

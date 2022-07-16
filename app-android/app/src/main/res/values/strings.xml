@@ -11,10 +11,6 @@
     <string name="menu_clear_template_image">Clear template image</string>
     <string name="menu_select_another_template_image">Select another image</string>
 
-    <string name="no_host_defined">No valid recipient host defined. Please configure in \"Settings / Recipient host\".</string>
-
-    <string name="preferences_host">Recipient host</string>
-    <string name="preferences_host_summary">Host name or IP address where touch input is sent to</string>
     <string name="preferences_stylus_only">Sense stylus only</string>
     <string name="preferences_stylus_only_on">Only stylus input will be processed</string>
     <string name="preferences_stylus_only_off">Finger and stylus input will be processed</string>

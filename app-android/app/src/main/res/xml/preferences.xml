@@ -1,14 +1,4 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="Network preferences">
-        <EditTextPreference
-            android:defaultValue="host.example.com"
-            android:key="host_preference"
-            android:singleLine="true"
-            android:inputType="textUri"
-            android:title="@string/preferences_host"
-            android:summary="@string/preferences_host_summary" />
-    </PreferenceCategory>
-
     <PreferenceCategory android:title="Drawing preferences">
         <CheckBoxPreference
             android:defaultValue="true"

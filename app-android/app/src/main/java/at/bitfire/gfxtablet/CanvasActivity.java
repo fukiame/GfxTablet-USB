@@ -148,6 +148,8 @@ public class CanvasActivity extends AppCompatActivity implements View.OnSystemUi
         final View decorView = getWindow().getDecorView();
         int uiFlags = decorView.getSystemUiVisibility();
 
+        uiFlags ^= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        uiFlags ^= View.SYSTEM_UI_FLAG_FULLSCREEN;
         uiFlags ^= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
         decorView.setOnSystemUiVisibilityChangeListener(this);
