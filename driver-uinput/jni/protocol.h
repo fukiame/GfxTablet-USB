@@ -11,8 +11,8 @@
 
 struct event_packet
 {
-	//char signature[9];
-	//uint16_t version;
+	char signature[9];
+	uint16_t version;
 	uint8_t type;	/* EVENT_TYPE_... */
 	struct {	/* required */
 		uint16_t x, y;

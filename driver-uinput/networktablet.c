@@ -7,7 +7,6 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <limits.h>
-#include <arpa/inet.h>
 #include <linux/input.h>
 #include <linux/uinput.h>
 #include <stdint.h>
@@ -19,7 +18,8 @@
 }
 
 
-int udp_socket;
+//int udp_socket;
+FILE* daemonOut;
 
 
 void init_device(int fd)
@@ -102,6 +102,7 @@ void init_device(int fd)
         }
 }
 
+/*
 int prepare_socket()
 {
 	int s;
@@ -120,6 +121,7 @@ int prepare_socket()
 
 	return s;
 }
+*/
 
 void send_event(int device, int type, int code, int value)
 {
@@ -132,9 +134,40 @@ void send_event(int device, int type, int code, int value)
 }
 
 void quit(int signal) {
-	close(udp_socket);
+	//close(udp_socket);
+	pclose(daemonOut);
 }
 
+FILE* connect_device()
+{
+	if (system("adb devices") != 0)
+		die("error: starting adb");
+
+	FILE* shell = popen("adb shell run-as at.bitfire.gfxtablet /data/user/0/at.bitfire.gfxtablet/files/daemon", "r");
+	if (shell == NULL)
+		die("error: can't start daemonOut");
+	return shell;
+}
+
+struct event_packet get_event() {
+	char* line;
+	size_t size = 0;
+	if(getline(&line, &size, daemonOut) != -1) {
+		printf("%s", line);
+		struct event_packet data;
+		int a, b, c, d, e, f;
+
+		sscanf(line, "%d %d %d %d %d %d", &a, &b, &c, &d, &e, &f);
+
+		data.type = a;
+		data.pressure = b;
+		data.x = c;
+		data.y = d;
+		data.button = e;
+		data.down = f;
+		return data;
+	}
+}
 
 int main(void)
 {
@@ -145,32 +178,21 @@ int main(void)
 		die("error: open");
 
 	init_device(device);
-	udp_socket = prepare_socket();
+	//udp_socket = prepare_socket();
+	daemonOut = connect_device();
 
-	printf("GfxTablet driver (protocol version %u) is ready and listening on 0.0.0.0:%u (UDP)\n"
-		"Hint: Make sure that this port is not blocked by your firewall.\n", PROTOCOL_VERSION, GFXTABLET_PORT);
+	//printf("GfxTablet driver (protocol version %u) is ready and listening on 0.0.0.0:%u (UDP)\n"
+	//	"Hint: Make sure that this port is not blocked by your firewall.\n", PROTOCOL_VERSION, GFXTABLET_PORT);
 
 	signal(SIGINT, quit);
 	signal(SIGTERM, quit);
 
-	while (recv(udp_socket, &ev_pkt, sizeof(ev_pkt), 0) >= 9) {		// every packet has at least 9 bytes
-		printf("."); fflush(0);
+	//while (recv(udp_socket, &ev_pkt, sizeof(ev_pkt), 0) >= 9) {		// every packet has at least 9 bytes
+	while (1) {
+		ev_pkt = get_event();
+		//printf("."); fflush(0);
 
-		if (memcmp(ev_pkt.signature, "GfxTablet", 9) != 0) {
-			fprintf(stderr, "\nGot unknown packet on port %i, ignoring\n", GFXTABLET_PORT);
-			continue;
-		}
-		ev_pkt.version = ntohs(ev_pkt.version);
-		if (ev_pkt.version != PROTOCOL_VERSION) {
-			fprintf(stderr, "\nGfxTablet app speaks protocol version %i but driver speaks version %i, please update\n",
-				ev_pkt.version, PROTOCOL_VERSION);
-			break;
-		}
-
-		ev_pkt.x = ntohs(ev_pkt.x);
-		ev_pkt.y = ntohs(ev_pkt.y);
-		ev_pkt.pressure = ntohs(ev_pkt.pressure);
-		printf("x: %hu, y: %hu, pressure: %hu\n", ev_pkt.x, ev_pkt.y, ev_pkt.pressure);
+		//printf("x: %hu, y: %hu, pressure: %hu\n", ev_pkt.x, ev_pkt.y, ev_pkt.pressure);
 
 		send_event(device, EV_ABS, ABS_X, ev_pkt.x);
 		send_event(device, EV_ABS, ABS_Y, ev_pkt.y);
@@ -199,7 +221,8 @@ int main(void)
 
 		}
 	}
-	close(udp_socket);
+	//close(udp_socket);
+	pclose(daemonOut);
 
 	printf("Removing network tablet from device list\n");
 	ioctl(device, UI_DEV_DESTROY);

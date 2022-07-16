@@ -1,5 +1,6 @@
 package at.bitfire.gfxtablet;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -7,13 +8,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.PopupMenu;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
+
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,9 +22,16 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-public class CanvasActivity extends AppCompatActivity implements View.OnSystemUiVisibilityChangeListener, SharedPreferences.OnSharedPreferenceChangeListener {
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Objects;
+
+public class CanvasActivity extends AppCompatActivity implements View.OnSystemUiVisibilityChangeListener {
     private static final int RESULT_LOAD_IMAGE = 1;
-    private static final String TAG = "GfxTablet.Canvas";
 
     final Uri homepageUri = Uri.parse(("https://gfxtablet.bitfire.at"));
 
@@ -39,7 +46,44 @@ public class CanvasActivity extends AppCompatActivity implements View.OnSystemUi
         super.onCreate(savedInstanceState);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        preferences.registerOnSharedPreferenceChangeListener(this);
+
+        if (preferences.getBoolean("first_run", true)) {
+            preferences.edit().putBoolean("first_run", false).apply();
+
+            try {
+                String cpuAbiProp = new BufferedReader(new InputStreamReader(Runtime.getRuntime().exec("getprop ro.product.cpu.abi").getInputStream())).readLine();
+                String CPU_ABI;
+                if (cpuAbiProp.contains("x86")) {
+                    CPU_ABI = "x86";
+                } else if (cpuAbiProp.contains("arm64-v8a")) {
+                    CPU_ABI = "arm64-v8a";
+                } else if (cpuAbiProp.contains("armeabi-v7a")) {
+                    CPU_ABI = "armeabi-v7a";
+                } else {
+                    CPU_ABI = "armeabi-v7a";
+                }
+
+                InputStream inputStream = this.getAssets().open("raw/" + CPU_ABI + "/daemon");
+                //getFilesDir() 获得当前APP的安装路径 /data/data/包名/files 目录
+                File file = new File(this.getApplicationContext().getFilesDir(), "daemon");
+                if(!file.exists() || file.length() == 0) {
+                    FileOutputStream fos = new FileOutputStream(file);//如果文件不存在，FileOutputStream会自动创建文件
+                    int len;
+                    byte[] buffer = new byte[1024];
+                    while ((len = inputStream.read(buffer)) != -1) {
+                        fos.write(buffer, 0, len);
+                    }
+                    fos.flush();//刷新缓存区
+                    inputStream.close();
+                    fos.close();
+                }
+
+                Runtime.getRuntime().exec("chmod +x " + this.getApplicationContext().getFilesDir() + "/daemon");
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         setContentView(R.layout.activity_canvas);
 
@@ -49,7 +93,7 @@ public class CanvasActivity extends AppCompatActivity implements View.OnSystemUi
         new ConfigureNetworkingTask().execute();
 
         // notify CanvasView of the network client
-        CanvasView canvas = (CanvasView)findViewById(R.id.canvas);
+        CanvasView canvas = findViewById(R.id.canvas);
         canvas.setNetworkClient(netClient);
     }
 
@@ -98,31 +142,13 @@ public class CanvasActivity extends AppCompatActivity implements View.OnSystemUi
     }
 
 
-    // preferences were changed
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        switch (key) {
-            case SettingsActivity.KEY_PREF_HOST:
-                Log.i(TAG, "Recipient host changed, reconfiguring network client");
-                new ConfigureNetworkingTask().execute();
-                break;
-        }
-    }
-
-
     // full-screen methods
 
     public void switchFullScreen(MenuItem item) {
         final View decorView = getWindow().getDecorView();
         int uiFlags = decorView.getSystemUiVisibility();
 
-        if (Build.VERSION.SDK_INT >= 14)
-            uiFlags ^= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-        if (Build.VERSION.SDK_INT >= 16)
-            uiFlags ^= View.SYSTEM_UI_FLAG_FULLSCREEN;
-        if (Build.VERSION.SDK_INT >= 19)
-            uiFlags ^= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        uiFlags ^= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
         decorView.setOnSystemUiVisibilityChangeListener(this);
         decorView.setSystemUiVisibility(uiFlags);
@@ -136,10 +162,10 @@ public class CanvasActivity extends AppCompatActivity implements View.OnSystemUi
 
         // show/hide action bar according to full-screen mode
         if (fullScreen) {
-            CanvasActivity.this.getSupportActionBar().hide();
+            Objects.requireNonNull(CanvasActivity.this.getSupportActionBar()).hide();
             Toast.makeText(CanvasActivity.this, "Press Back button to leave full-screen mode.", Toast.LENGTH_LONG).show();
         } else
-            CanvasActivity.this.getSupportActionBar().show();
+            Objects.requireNonNull(CanvasActivity.this.getSupportActionBar()).show();
     }
 
 
@@ -166,7 +192,7 @@ public class CanvasActivity extends AppCompatActivity implements View.OnSystemUi
     }
 
     public void clearTemplateImage(MenuItem item) {
-        preferences.edit().remove(SettingsActivity.KEY_TEMPLATE_IMAGE).commit();
+        preferences.edit().remove(SettingsActivity.KEY_TEMPLATE_IMAGE).apply();
         showTemplateImage();
     }
 
@@ -177,23 +203,20 @@ public class CanvasActivity extends AppCompatActivity implements View.OnSystemUi
             Uri selectedImage = data.getData();
             String[] filePathColumn = { MediaStore.Images.Media.DATA };
 
-            Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-            try {
+            try (Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null)) {
                 cursor.moveToFirst();
 
                 int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
                 String picturePath = cursor.getString(columnIndex);
 
-                preferences.edit().putString(SettingsActivity.KEY_TEMPLATE_IMAGE, picturePath).commit();
+                preferences.edit().putString(SettingsActivity.KEY_TEMPLATE_IMAGE, picturePath).apply();
                 showTemplateImage();
-            } finally {
-                cursor.close();
             }
         }
     }
 
     public void showTemplateImage() {
-        ImageView template = (ImageView)findViewById(R.id.canvas_template);
+        ImageView template = findViewById(R.id.canvas_template);
         template.setImageDrawable(null);
 
         if (template.getVisibility() == View.VISIBLE) {
@@ -211,6 +234,7 @@ public class CanvasActivity extends AppCompatActivity implements View.OnSystemUi
     }
 
 
+    @SuppressLint("StaticFieldLeak")
     private class ConfigureNetworkingTask extends AsyncTask<Void, Void, Boolean> {
         @Override
         protected Boolean doInBackground(Void... params) {
