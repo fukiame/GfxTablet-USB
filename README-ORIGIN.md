@@ -1,13 +1,34 @@
-What is GfxTablet-USB?
+
+**This project is currently not actively maintained/managed. If you're interested in taking it over,
+please tell me at info@bitfire.at.**
+
+To be informed about updates:
+
+* [follow GfxTablet on Twitter](https://twitter.com/GfxTablet)
+
+
+What is GfxTablet?
 ==================
 
-GfxTablet-USB use USB instead of UDP, so it will be more user-friendly and will probably reduce the delays.
+GfxTablet shall make it possible to use your Android device (especially
+tablets) like a graphics tablet.
 
-It consists of three components:
+It consists of two components:
 
 * the GfxTablet Android app
-* the daemon for Android
 * the input driver for your PC
+
+The GfxTablet app sends motion and touch events via UDP to a specified host
+on port 40118.
+
+The input driver must be installed on your PC. It creates a virtual "network tablet"
+on your PC that is controlled by your Android device.
+
+So, you can use your Android tablet or smartphone to control the PC and,
+for instance _use GIMP with your Android tablet as a graphics tablet_
+(even pressure-sensitive, if your hardware supports it).
+
+Help and discussion: [GfxTablet discussions](https://github.com/rfc2822/GfxTablet/discussions)
 
 
 License
@@ -42,17 +63,22 @@ If you use Xorg (you probably do):
 Installation
 ============
 
+Github repository: https://github.com/rfc2822/GfxTablet
+
+
 Part 1: uinput driver
 ---------------------
 
-On your PC, either download the binary from [release](https://github.com/misaka19465/GfxTablet-USB/releases) (don't forget to `chmod a+x` it):
+On your PC, either download one of these binaries (don't forget to `chmod a+x` it):
+
+* [networktablet 64-bit, dynamically linked, tested with Debian Stretch/Buster](https://github.com/rfc2822/GfxTablet/releases/download/android-app-1.4-linux-driver-1.5/networktablet)
 
 or compile it yourself (don't be afraid, it's only one file)
 
 1. Clone the repository:
-   `git clone git://github.com/misaka19465/GfxTablet-USB.git`
+   `git clone git://github.com/rfc2822/GfxTablet.git`
 2. Install gcc, make and linux kernel header includes (`kernel-headers` on Fedora)
-3. `cd GfxTablet-USB/driver-uinput; make`
+3. `cd GfxTablet/driver-uinput; make`
 
 Then, run the binary. The driver runs in user-mode, so it doesn't need any special privileges.
 However, it needs access to `/dev/uinput`. If your distribution doesn't create a group for
@@ -74,10 +100,13 @@ Part 2: App
 
 You can either
 
-1. compile the app from the source code in the Github repository
-2. [download it from releases](https://github.com/misaka19465/GfxTablet-USB/releases)
+1. compile the app from the source code in the Github repository, or
+2. [download it from the open-source market F-Droid](https://f-droid.org/repository/browse/?fdcategory=Multimedia&fdid=at.bitfire.gfxtablet), or
+3. download it from Samsung Galaxy Apps (if you have a Samsung device), or
+4. [download it directly from Github](https://github.com/rfc2822/GfxTablet/releases), or
+5. ~~[download it from Google Play](https://play.google.com/store/apps/details?id=at.bitfire.gfxtablet)~~ [removed by Google](https://forums.bitfire.at/topic/1071/google-has-removed-gfxtablet-from-google-play)
 
-After installing, run once first before running uinput driver.
+After installing, enter your host IP in the Settings / Host name and it should be ready.
 
 
 Part 3: Use it

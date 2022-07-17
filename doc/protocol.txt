@@ -38,3 +38,14 @@ A GfxTablet client must therefore be careful to send a "Button -1
 down" event before a "Button 0 down" event, to emulate this
 behaviour. If they are faking these events, they'll probably want
 to likewise send a "Button -1 up" event after a "Button 0 up" event.
+
+
+---------
+USB protocol used by GfxTablet-USB
+
+
+
+GfxTablet-USB app creates an executable file at /data/user/0/at.bitfire.gfxtablet/files/daemon. because without your tablet (or phone) rooted, you can't give the execute promission for everyone, so use run-as instead. The app sends original UDP packets to localhost and the daemon transcodes the packets into single-line strings and sends them to stdout.
+
+Packet structure:
+"%d %d %d %d %d %d", Respectively stand for event type, pressure, x, y, button id, and button status.
