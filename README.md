@@ -15,7 +15,7 @@ License
 
 GfxTablet is licensed under The MIT License.
 
-Initial contributor: Ricki Hirner / powered by [bitfire web engineering](https://www.bitfire.at) / [gimpusers.com](http://www.gimpusers.com)
+Initial contributor: Ricki Hirner / powered by [bitfire web engineering](https://www.bitfire.at) / [gimpusers.com](http://www.gimpusers.com) / Misaka 19465
 
 
 Features
