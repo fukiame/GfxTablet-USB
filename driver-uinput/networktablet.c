@@ -152,11 +152,9 @@ FILE* connect_device()
 struct event_packet get_event() {
 	char* line;
 	size_t size = 0;
-	if(getline(&line, &size, daemonOut) != -1) {
-		//printf("%s", line);
-		struct event_packet data;
+	struct event_packet data;
+	if(getline(&line, &size, daemonOut) > 10) {
 		int a, b, c, d, e, f;
-
 		sscanf(line, "%d %d %d %d %d %d", &a, &b, &c, &d, &e, &f);
 
 		data.type = a;
@@ -165,8 +163,10 @@ struct event_packet get_event() {
 		data.y = d;
 		data.button = e;
 		data.down = f;
-		return data;
+	} else {
+		exit(-1);
 	}
+	return data;
 }
 
 int main(void)
@@ -190,6 +190,7 @@ int main(void)
 	//while (recv(udp_socket, &ev_pkt, sizeof(ev_pkt), 0) >= 9) {		// every packet has at least 9 bytes
 	while (1) {
 		ev_pkt = get_event();
+
 		printf("."); fflush(0);
 
 		printf("x: %hu, y: %hu, pressure: %hu\n", ev_pkt.x, ev_pkt.y, ev_pkt.pressure);
