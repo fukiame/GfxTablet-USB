@@ -25,7 +25,7 @@ int prepare_socket()
 	if ((s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
 		die("error: prepare_socket()");
 
-	bzero(&addr, sizeof(struct sockaddr_in));
+	memset(&addr, 0, sizeof(struct sockaddr_in));
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(GFXTABLET_PORT);
 	addr.sin_addr.s_addr = htonl(INADDR_ANY);
