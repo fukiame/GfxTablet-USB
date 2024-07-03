@@ -178,9 +178,9 @@ int main(void)
 	while (1) {
 		ev_pkt = get_event();
 
-		printf("."); fflush(0);
+		// printf("."); fflush(0);
 
-		printf("x: %hu, y: %hu: %hu\n", ev_pkt.x, ev_pkt.y);
+		// printf("x: %hu, y: %hu: %hu\n", ev_pkt.x, ev_pkt.y);
 
 		send_event(device, EV_ABS, ABS_X, ev_pkt.x);
 		send_event(device, EV_ABS, ABS_Y, ev_pkt.y);
@@ -202,7 +202,7 @@ int main(void)
 				// button 2
 				if (ev_pkt.button == 2)
 					send_event(device, EV_KEY, BTN_STYLUS2, ev_pkt.down);
-				printf("sent button: %hhi, %hhu\n", ev_pkt.button, ev_pkt.down);
+				// printf("sent button: %hhi, %hhu\n", ev_pkt.button, ev_pkt.down);
 				send_event(device, EV_SYN, SYN_REPORT, 1);
 				break;
 
