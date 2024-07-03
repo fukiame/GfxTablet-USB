@@ -97,7 +97,7 @@ public class CanvasView extends View implements SharedPreferences.OnSharedPrefer
 					netClient.getQueue().add(new NetEvent(Type.TYPE_BUTTON, nx, ny, -1, false));
 					break;
 				}
-			)
+			}
 			return true;
 		}
 		return false;
