@@ -80,7 +80,7 @@ public class CanvasView extends View implements SharedPreferences.OnSharedPrefer
 	@Override
 	public boolean onGenericMotionEvent(MotionEvent event) {
 		if (isEnabled()) {
-			for (int ptr = 0; ptr < event.getPointerCount(); ptr++)
+			for (int ptr = 0; ptr < event.getPointerCount(); ptr++) {
 				short nx = normalizeX(event.getX(ptr)),
 						ny = normalizeY(event.getY(ptr)),
 				// Log.v(TAG, String.format("Generic motion event logged: %f|%f, pressure %f", event.getX(ptr), event.getY(ptr), event.getPressure(ptr))); // T25 - disable motion logging
@@ -97,6 +97,7 @@ public class CanvasView extends View implements SharedPreferences.OnSharedPrefer
 					netClient.getQueue().add(new NetEvent(Type.TYPE_BUTTON, nx, ny, -1, false));
 					break;
 				}
+			)
 			return true;
 		}
 		return false;
@@ -106,7 +107,7 @@ public class CanvasView extends View implements SharedPreferences.OnSharedPrefer
 	@Override
 	public boolean onTouchEvent(@NonNull MotionEvent event) {
 		if (isEnabled()) {
-			for (int ptr = 0; ptr < event.getPointerCount(); ptr++)
+			for (int ptr = 0; ptr < event.getPointerCount(); ptr++) {
 				short nx = normalizeX(event.getX(ptr)),
 					  ny = normalizeY(event.getY(ptr)),
 				// Log.v(TAG, String.format("Touch event logged: action %d @ %f|%f (pressure %f)", event.getActionMasked(), event.getX(ptr), event.getY(ptr), event.getPressure(ptr))); // T25 - disable motion logging
@@ -130,6 +131,7 @@ public class CanvasView extends View implements SharedPreferences.OnSharedPrefer
 					}
 					break;
 				}
+			}
 			return true;
 		}
 		return false;
