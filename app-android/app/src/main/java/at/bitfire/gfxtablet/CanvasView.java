@@ -94,7 +94,7 @@ public class CanvasView extends View implements SharedPreferences.OnSharedPrefer
 					short nx = normalizeX(event.getX(ptr)),
 							ny = normalizeY(event.getY(ptr)),
 							npressure = normalizePressure(event.getPressure(ptr));
-					Log.v(TAG, String.format("Generic motion event logged: %f|%f, pressure %f", event.getX(ptr), event.getY(ptr), event.getPressure(ptr)));
+					// Log.v(TAG, String.format("Generic motion event logged: %f|%f, pressure %f", event.getX(ptr), event.getY(ptr), event.getPressure(ptr))); // T25 - disable motion logging
 					switch (event.getActionMasked()) {
 					case MotionEvent.ACTION_HOVER_MOVE:
 						netClient.getQueue().add(new NetEvent(Type.TYPE_MOTION, nx, ny, npressure));
@@ -123,7 +123,7 @@ public class CanvasView extends View implements SharedPreferences.OnSharedPrefer
 					short nx = normalizeX(event.getX(ptr)),
 						  ny = normalizeY(event.getY(ptr)),
 						  npressure = normalizePressure(event.getPressure(ptr));
-					Log.v(TAG, String.format("Touch event logged: action %d @ %f|%f (pressure %f)", event.getActionMasked(), event.getX(ptr), event.getY(ptr), event.getPressure(ptr)));
+					// Log.v(TAG, String.format("Touch event logged: action %d @ %f|%f (pressure %f)", event.getActionMasked(), event.getX(ptr), event.getY(ptr), event.getPressure(ptr))); // T25 - disable motion logging
 					switch (event.getActionMasked()) {
 					case MotionEvent.ACTION_MOVE:
 						netClient.getQueue().add(new NetEvent(Type.TYPE_MOTION, nx, ny, npressure));
