@@ -16,7 +16,6 @@ struct event_packet
 	uint8_t type;	/* EVENT_TYPE_... */
 	struct {	/* required */
 		uint16_t x, y;
-		uint16_t pressure;
 	};
 
 	struct {	/* only required for EVENT_TYPE_BUTTON */

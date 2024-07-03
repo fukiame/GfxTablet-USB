@@ -43,7 +43,7 @@ int main(void)
 
 	while (recv(udp_socket, &ev_pkt, sizeof(ev_pkt), 0) >= 9) {
 		fflush(0);
-		printf("%d %d %d %d %d %d\n", ev_pkt.type, ntohs(ev_pkt.pressure), ntohs(ev_pkt.x), ntohs(ev_pkt.y), ev_pkt.button, ev_pkt.down);
+		printf("%d %d %d %d %d\n", ev_pkt.type, ntohs(ev_pkt.x), ntohs(ev_pkt.y), ev_pkt.button, ev_pkt.down);
 	}
 
 	close(udp_socket);

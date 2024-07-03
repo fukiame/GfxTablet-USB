@@ -17,7 +17,6 @@ Packet structure, uses network byte order (big endian):
 
   1  unsigned int16     x (using full range: 0..65535)
   1  unsigned int16     y (using full range: 0..65535)
-  1  unsigned int16     pressure (accepting full range 0..65535, but will clip to 32768 == pressure 1.0f on Android device)
 
   when type == button event:
   1  signed int8     button id:
@@ -48,4 +47,4 @@ USB protocol used by GfxTablet-USB
 GfxTablet-USB app creates an executable file at /data/user/0/at.bitfire.gfxtablet/files/daemon. because without your tablet (or phone) rooted, you can't give the execute promission for everyone, so use run-as instead. The app sends original UDP packets to localhost and the daemon transcodes the packets into single-line strings and sends them to stdout.
 
 Packet structure:
-"%d %d %d %d %d %d", Respectively stand for event type, pressure, x, y, button id, and button status.
+"%d %d %d %d %d", Respectively stand for event type, x, y, button id, and button status.

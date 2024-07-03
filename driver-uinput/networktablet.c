@@ -40,15 +40,13 @@ void init_device(int fd)
 	if (ioctl(fd, UI_SET_KEYBIT, BTN_STYLUS2) < 0)
 		die("error: ioctl UI_SET_KEYBIT");
 
-	// enable 2 main axes + pressure (absolute positioning)
+	// enable 2 main axes (absolute positioning)
 	if (ioctl(fd, UI_SET_EVBIT, EV_ABS) < 0)
 		die("error: ioctl UI_SET_EVBIT EV_ABS");
 	if (ioctl(fd, UI_SET_ABSBIT, ABS_X) < 0)
 		die("error: ioctl UI_SETEVBIT ABS_X");
 	if (ioctl(fd, UI_SET_ABSBIT, ABS_Y) < 0)
 		die("error: ioctl UI_SETEVBIT ABS_Y");
-	if (ioctl(fd, UI_SET_ABSBIT, ABS_PRESSURE) < 0)
-		die("error: ioctl UI_SETEVBIT ABS_PRESSURE");
 
         {
           struct uinput_abs_setup abs_setup;
@@ -75,17 +73,6 @@ void init_device(int fd)
           abs_setup.absinfo.resolution = 400;
           if (ioctl(fd, UI_ABS_SETUP, &abs_setup) < 0)
             die("error: UI_ABS_SETUP ABS_Y");
-
-          memset(&abs_setup, 0, sizeof(abs_setup));
-          abs_setup.code = ABS_PRESSURE;
-          abs_setup.absinfo.value = 0;
-          abs_setup.absinfo.minimum = 0;
-          abs_setup.absinfo.maximum = INT16_MAX;
-          abs_setup.absinfo.fuzz = 0;
-          abs_setup.absinfo.flat = 0;
-          abs_setup.absinfo.resolution = 0;
-          if (ioctl(fd, UI_ABS_SETUP, &abs_setup) < 0)
-            die("error: UI_ABS_SETUP ABS_PRESSURE");
 
           memset(&setup, 0, sizeof(setup));
           snprintf(setup.name, UINPUT_MAX_NAME_SIZE, "Network Tablet");
@@ -155,15 +142,14 @@ struct event_packet get_event() {
 	size_t size = 0;
 	struct event_packet data;
 	if(getline(&line, &size, daemonOut) > 10) {
-		int a, b, c, d, e, f;
-		sscanf(line, "%d %d %d %d %d %d", &a, &b, &c, &d, &e, &f);
+		int a, b, c, d, e;
+		sscanf(line, "%d %d %d %d %d", &a, &b, &c, &d, &e);
 
 		data.type = a;
-		data.pressure = b;
-		data.x = c;
-		data.y = d;
-		data.button = e;
-		data.down = f;
+		data.x = b;
+		data.y = c;
+		data.button = d;
+		data.down = e;
 	} else {
 		exit(-1);
 	}
@@ -194,11 +180,10 @@ int main(void)
 
 		printf("."); fflush(0);
 
-		printf("x: %hu, y: %hu, pressure: %hu\n", ev_pkt.x, ev_pkt.y, ev_pkt.pressure);
+		printf("x: %hu, y: %hu: %hu\n", ev_pkt.x, ev_pkt.y);
 
 		send_event(device, EV_ABS, ABS_X, ev_pkt.x);
 		send_event(device, EV_ABS, ABS_Y, ev_pkt.y);
-		send_event(device, EV_ABS, ABS_PRESSURE, ev_pkt.pressure);
 
 		switch (ev_pkt.type) {
 			case EVENT_TYPE_MOTION:

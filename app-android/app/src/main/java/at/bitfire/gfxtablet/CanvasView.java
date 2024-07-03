@@ -83,19 +83,18 @@ public class CanvasView extends View implements SharedPreferences.OnSharedPrefer
 			for (int ptr = 0; ptr < event.getPointerCount(); ptr++)
 				short nx = normalizeX(event.getX(ptr)),
 						ny = normalizeY(event.getY(ptr)),
-						npressure = normalizePressure(event.getPressure(ptr));
 				// Log.v(TAG, String.format("Generic motion event logged: %f|%f, pressure %f", event.getX(ptr), event.getY(ptr), event.getPressure(ptr))); // T25 - disable motion logging
 				switch (event.getActionMasked()) {
 				case MotionEvent.ACTION_HOVER_MOVE:
-					netClient.getQueue().add(new NetEvent(Type.TYPE_MOTION, nx, ny, npressure));
+					netClient.getQueue().add(new NetEvent(Type.TYPE_MOTION, nx, ny));
 					break;
 				case MotionEvent.ACTION_HOVER_ENTER:
 					inRangeStatus = InRangeStatus.InRange;
-					netClient.getQueue().add(new NetEvent(Type.TYPE_BUTTON, nx, ny, npressure, -1, true));
+					netClient.getQueue().add(new NetEvent(Type.TYPE_BUTTON, nx, ny, -1, true));
 					break;
 				case MotionEvent.ACTION_HOVER_EXIT:
 					inRangeStatus = InRangeStatus.OutOfRange;
-					netClient.getQueue().add(new NetEvent(Type.TYPE_BUTTON, nx, ny, npressure, -1, false));
+					netClient.getQueue().add(new NetEvent(Type.TYPE_BUTTON, nx, ny, -1, false));
 					break;
 				}
 			return true;
@@ -110,22 +109,21 @@ public class CanvasView extends View implements SharedPreferences.OnSharedPrefer
 			for (int ptr = 0; ptr < event.getPointerCount(); ptr++)
 				short nx = normalizeX(event.getX(ptr)),
 					  ny = normalizeY(event.getY(ptr)),
-					  npressure = normalizePressure(event.getPressure(ptr));
 				// Log.v(TAG, String.format("Touch event logged: action %d @ %f|%f (pressure %f)", event.getActionMasked(), event.getX(ptr), event.getY(ptr), event.getPressure(ptr))); // T25 - disable motion logging
 				switch (event.getActionMasked()) {
 				case MotionEvent.ACTION_MOVE:
-					netClient.getQueue().add(new NetEvent(Type.TYPE_MOTION, nx, ny, npressure));
+					netClient.getQueue().add(new NetEvent(Type.TYPE_MOTION, nx, ny));
 					break;
 				case MotionEvent.ACTION_DOWN:
 					if (inRangeStatus == inRangeStatus.OutOfRange) {
 						inRangeStatus = inRangeStatus.FakeInRange;
 						netClient.getQueue().add(new NetEvent(Type.TYPE_BUTTON, nx, ny, (short)0, -1, true));
 					}
-					netClient.getQueue().add(new NetEvent(Type.TYPE_BUTTON, nx, ny, npressure, 0, true));
+					netClient.getQueue().add(new NetEvent(Type.TYPE_BUTTON, nx, ny, 0, true));
 					break;
 				case MotionEvent.ACTION_UP:
 				case MotionEvent.ACTION_CANCEL:
-					netClient.getQueue().add(new NetEvent(Type.TYPE_BUTTON, nx, ny, npressure, 0, false));
+					netClient.getQueue().add(new NetEvent(Type.TYPE_BUTTON, nx, ny, 0, false));
 					if (inRangeStatus == inRangeStatus.FakeInRange) {
 						inRangeStatus = inRangeStatus.OutOfRange;
 						netClient.getQueue().add(new NetEvent(Type.TYPE_BUTTON, nx, ny, (short)0, -1, false));
@@ -145,10 +143,6 @@ public class CanvasView extends View implements SharedPreferences.OnSharedPrefer
 	
 	short normalizeY(float x) {
 		return (short)(Math.min(Math.max(0, x), maxY) * 2*Short.MAX_VALUE/maxY);
-	}
-	
-	short normalizePressure(float x) {
-		return (short)(Math.min(Math.max(0, x), 2.0) * Short.MAX_VALUE);
 	}
 
 }

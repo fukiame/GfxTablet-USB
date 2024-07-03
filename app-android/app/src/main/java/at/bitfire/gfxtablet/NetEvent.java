@@ -18,7 +18,7 @@ public class NetEvent {
 	static final short protocol_version = 2;
 	
 	final Type type;
-	short x, y, pressure;
+	short x, y;
 	byte button, button_down;
 
 	
@@ -26,15 +26,14 @@ public class NetEvent {
 		this.type = type;
 	}
 
-	public NetEvent(Type type, short x, short y, short pressure) {
+	public NetEvent(Type type, short x, short y) {
 		this.type = type;
 		this.x = x;
 		this.y = y;
-		this.pressure = pressure;
 	}
 	
-	public NetEvent(Type type, short x, short y, short pressure, int button, boolean button_down) {
-		this(type, x, y, pressure);
+	public NetEvent(Type type, short x, short y, int button, boolean button_down) {
+		this(type, x, y);
 		this.button = (byte)button;
 		this.button_down = (byte)(button_down ? 1 : 0);
 	}
@@ -62,7 +61,6 @@ public class NetEvent {
 			
 			dos.writeShort(x);
 			dos.writeShort(y);
-			dos.writeShort(pressure);
 			
 			if (type == Type.TYPE_BUTTON) {
 				dos.writeByte(button);
