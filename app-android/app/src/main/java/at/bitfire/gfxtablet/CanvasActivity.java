@@ -192,13 +192,9 @@ public class CanvasActivity extends AppCompatActivity implements View.OnSystemUi
 
     public void selectTemplateImage(MenuItem item) {
         Intent i;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-            i.addCategory(Intent.CATEGORY_OPENABLE);
-            i.setType("image/*");
-        } else {
-            i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        }
+        i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        i.setType("image/*");
         startActivityForResult(i, RESULT_LOAD_IMAGE);
     }
 
@@ -212,23 +208,9 @@ public class CanvasActivity extends AppCompatActivity implements View.OnSystemUi
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && data != null) {
             Uri selectedImage = data.getData();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                int flagsToPersist = data.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION;
-                getContentResolver().takePersistableUriPermission(selectedImage, flagsToPersist);
-                preferences.edit().putString(SettingsActivity.KEY_TEMPLATE_IMAGE, selectedImage.toString()).apply();
-            } else {
-                String[] filePathColumn = {MediaStore.Images.Media.DATA};
-
-                try (Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null)) {
-                    cursor.moveToFirst();
-
-                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                    String picturePath = cursor.getString(columnIndex);
-
-                    preferences.edit().putString(SettingsActivity.KEY_TEMPLATE_IMAGE, picturePath).apply();
-                    showTemplateImage();
-                }
-            }
+            int flagsToPersist = data.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION;
+            getContentResolver().takePersistableUriPermission(selectedImage, flagsToPersist);
+            preferences.edit().putString(SettingsActivity.KEY_TEMPLATE_IMAGE, selectedImage.toString()).apply();
         }
     }
 
@@ -238,20 +220,10 @@ public class CanvasActivity extends AppCompatActivity implements View.OnSystemUi
 
         if (template.getVisibility() == View.VISIBLE) {
             String picturePath = preferences.getString(SettingsActivity.KEY_TEMPLATE_IMAGE, null);
-            if (picturePath != null)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    Uri pictureUri = Uri.parse(picturePath);
-                    template.setImageURI(pictureUri);
-                } else {
-                    try {
-                        // TODO load bitmap efficiently, for intended view size and display resolution
-                        // https://developer.android.com/training/displaying-bitmaps/load-bitmap.html
-                        final Drawable drawable = new BitmapDrawable(getResources(), picturePath);
-                        template.setImageDrawable(drawable);
-                    } catch (Exception e) {
-                        Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-                    }
-                }
+            if (picturePath != null) {
+                Uri pictureUri = Uri.parse(picturePath);
+                template.setImageURI(pictureUri);
+            }
         }
     }
 
