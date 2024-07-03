@@ -11,4 +11,4 @@ install :
 	install -D networktablet $(DESTDIR)$(BINDIR)/networktablet
 
 daemon :
-	cc -o daemon daemon.c
+	cc -Ofast -o daemon daemon.c
