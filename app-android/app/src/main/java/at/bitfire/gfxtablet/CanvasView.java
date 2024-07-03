@@ -118,7 +118,7 @@ public class CanvasView extends View implements SharedPreferences.OnSharedPrefer
 				case MotionEvent.ACTION_DOWN:
 					if (inRangeStatus == inRangeStatus.OutOfRange) {
 						inRangeStatus = inRangeStatus.FakeInRange;
-						netClient.getQueue().add(new NetEvent(Type.TYPE_BUTTON, nx, ny, (short)0, -1, true));
+						netClient.getQueue().add(new NetEvent(Type.TYPE_BUTTON, nx, ny, -1, true));
 					}
 					netClient.getQueue().add(new NetEvent(Type.TYPE_BUTTON, nx, ny, 0, true));
 					break;
@@ -127,7 +127,7 @@ public class CanvasView extends View implements SharedPreferences.OnSharedPrefer
 					netClient.getQueue().add(new NetEvent(Type.TYPE_BUTTON, nx, ny, 0, false));
 					if (inRangeStatus == inRangeStatus.FakeInRange) {
 						inRangeStatus = inRangeStatus.OutOfRange;
-						netClient.getQueue().add(new NetEvent(Type.TYPE_BUTTON, nx, ny, (short)0, -1, false));
+						netClient.getQueue().add(new NetEvent(Type.TYPE_BUTTON, nx, ny, -1, false));
 					}
 					break;
 				}
