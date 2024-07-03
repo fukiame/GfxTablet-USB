@@ -143,6 +143,7 @@ FILE* connect_device()
 	if (system("adb devices") != 0)
 		die("error: starting adb");
 
+	system("adb shell run-as at.bitfire.gfxtablet pkill -f /data/user/0/at.bitfire.gfxtablet/files/daemon");
 	FILE* shell = popen("adb shell run-as at.bitfire.gfxtablet /data/user/0/at.bitfire.gfxtablet/files/daemon", "r");
 	if (shell == NULL)
 		die("error: can't start daemonOut");
