@@ -53,7 +53,9 @@ public class CanvasActivity extends AppCompatActivity implements View.OnSystemUi
             try {
                 String cpuAbiProp = new BufferedReader(new InputStreamReader(Runtime.getRuntime().exec("getprop ro.product.cpu.abi").getInputStream())).readLine();
                 String CPU_ABI;
-                if (cpuAbiProp.contains("x86")) {
+                if (cpuAbiProp.contains("x86_64")) {
+                    CPU_ABI = "x86_64";
+                } else if (cpuAbiProp.contains("x86")) {
                     CPU_ABI = "x86";
                 } else if (cpuAbiProp.contains("arm64-v8a")) {
                     CPU_ABI = "arm64-v8a";
